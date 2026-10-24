@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Course mini-project page: a pre-registered test of a fine-tuned 7B EHR language model against a 0.29M-parameter model on ICU mortality prediction, with links to the LecTrace presentation and the report.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>ICU Numeracy Mini-Project</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a sticky text nav of section jumps over one 800px article column, like a research blog post.
+   Title, link buttons, a cover figure, a Question callout and a TL;DR come first; sections follow as plain headings.
+   Colour: white page, near-black ink, one green accent for links and buttons (nothing in the chrome is blue or orange,
+   so those two stay the data colours: blue = small model, orange = Llemr). */
+:root{
+  --bg:#ffffff; --surface:#ffffff; --soft:#f5f6f8; --soft-2:#eceef2;
+  --ink:#10151f; --text:#2d3440; --muted:#586272;
+  --line:#e4e7ec; --line-2:#cbd1da;
+  --accent:#15803d; --accent-ink:#166534; --on-accent:#ffffff;
+  --s-small:#2a78d6; --s-llemr:#eb6834;
+  --shadow:0 1px 2px rgba(16,21,31,.06),0 6px 20px rgba(16,21,31,.08);
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1117; --surface:#151b23; --soft:#161c25; --soft-2:#1e2530;
+    --ink:#f1f4f9; --text:#c8d0db; --muted:#95a1b2;
+    --line:#252d39; --line-2:#364050;
+    --accent:#3fbf74; --accent-ink:#6fe0a0; --on-accent:#06210f;
+    --s-small:#3987e5; --s-llemr:#d95926;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 24px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1117; --surface:#151b23; --soft:#161c25; --soft-2:#1e2530;
+  --ink:#f1f4f9; --text:#c8d0db; --muted:#95a1b2;
+  --line:#252d39; --line-2:#364050;
+  --accent:#3fbf74; --accent-ink:#6fe0a0; --on-accent:#06210f;
+  --s-small:#3987e5; --s-llemr:#d95926;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 17px/1.7 var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+p{margin:0}
+a{color:var(--accent-ink);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+strong{color:var(--ink);font-weight:600}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ico{width:14px;height:14px;flex:none}
+code{font-family:var(--mono);font-size:.88em}
+h1,h2,h3,h4{margin:0;color:var(--ink);text-wrap:balance}
+h1{font:700 clamp(32px,5.4vw,44px)/1.14 var(--font);letter-spacing:-.025em}
+h2{font:600 clamp(26px,3.5vw,32px)/1.22 var(--font);letter-spacing:-.02em}
+h3{font:600 clamp(19px,2.3vw,22px)/1.32 var(--font);letter-spacing:-.012em}
+
+.wrap,.col{width:100%;margin-left:auto;margin-right:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1072px}
+.col{max-width:848px}
+@media (min-width:720px){.wrap,.col{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}}
+
+/* top bar: section jumps */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:40}
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:stretch;gap:12px;height:56px}
+.brand{flex:none;display:inline-flex;align-items:center;gap:9px;color:var(--ink);font:700 15px/1 var(--font);letter-spacing:-.01em;text-decoration:none}
+.brand svg{width:22px;height:22px;color:var(--accent)}
+.brand .name{display:none}
+.nav-wrap{position:relative;flex:1;min-width:0}
+.nav-wrap::after{content:"";position:absolute;top:0;right:0;bottom:0;width:28px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+.nav{position:relative;display:flex;height:100%;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{position:relative;flex:none;display:inline-flex;align-items:center;padding:0 12px;color:var(--muted);font:500 14.5px/1 var(--font);text-decoration:none;white-space:nowrap}
+.nav a:last-child{padding-right:30px}
+.nav a:hover{color:var(--ink)}
+.nav a:focus-visible{outline-offset:-3px}
+.nav a[aria-current]{color:var(--ink)}
+.nav a[aria-current]::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--accent)}
+.nav a:last-child[aria-current]::after{right:30px}
+@media (min-width:760px){
+  .brand .name{display:inline}
+  .nav-wrap::after{display:none}
+  .nav{justify-content:flex-end}
+  .nav a:last-child{padding-right:12px}
+  .nav a:last-child[aria-current]::after{right:12px}
+}
+
+/* title block */
+.title-block{padding-top:clamp(36px,6vw,64px)}
+.meta{margin-top:16px;color:var(--muted);font-size:15px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border:1.5px solid transparent;border-radius:8px;font:600 15px/1.2 var(--font);text-decoration:none;transition:background-color .15s ease,border-color .15s ease}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-ink)}
+.btn-ghost{border-color:var(--line-2);color:var(--ink);background:transparent}
+.btn-ghost:hover{border-color:var(--ink)}
+
+/* figures */
+.fig{margin:clamp(28px,4vw,40px) 0 0;padding:clamp(18px,2.6vw,26px);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.fig figcaption{margin-top:16px;color:var(--muted);font-size:14px;line-height:1.55}
+.fig figcaption strong{color:var(--ink)}
+.cover-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:26px}
+@media (min-width:720px){.cover-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}.cover-grid .fig-s{min-height:2.9em}}
+.fig-t{color:var(--ink);font:600 15px/1.3 var(--font)}
+.fig-s{margin:3px 0 10px;color:var(--muted);font-size:13px;line-height:1.45}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 16px;padding:0;list-style:none;color:var(--muted);font-size:13.5px}
+.legend li{display:inline-flex;align-items:center;gap:8px}
+.key-sq{width:10px;height:10px;border-radius:2px}
+.key-line{position:relative;width:20px;height:2px;border-radius:1px}
+.key-line::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:inherit}
+.key-dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.key-dot.hollow{background:transparent;border:2px solid var(--muted)}
+.s-small.key-sq,.key-line.s-small{background:var(--s-small)}
+.s-llemr.key-sq,.key-line.s-llemr{background:var(--s-llemr)}
+.chart{position:relative;min-width:0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--font);paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+.g-line{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+.g-axis{stroke:var(--line-2);stroke-width:1;shape-rendering:crispEdges}
+.t-tick{fill:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.t-label{fill:var(--ink);font-size:13.5px;font-weight:600}
+.t-sub{fill:var(--muted);font-size:12.5px}
+.t-val{fill:var(--ink);font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.t-big{fill:var(--ink);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.t-gap{fill:var(--text);font-size:12.5px}
+.ring{fill:var(--surface)}
+.seg-small{--c:var(--s-small)}.seg-llemr{--c:var(--s-llemr)}
+.f-c{fill:var(--c)}.s-c{stroke:var(--c)}
+.conn{stroke-width:2;stroke-linecap:round;opacity:.6;fill:none}
+.dot-hollow{fill:var(--surface);stroke-width:2.5}
+.hit{fill:transparent;cursor:default;outline:none}
+.hit:focus-visible{stroke:var(--accent);stroke-width:2}
+.lineS{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cross{stroke:var(--muted);stroke-width:1}
+.plot-hit{fill:transparent;touch-action:pan-y;outline:none}
+.plot-hit:focus-visible{stroke:var(--accent);stroke-width:2}
+.tip{position:absolute;z-index:5;min-width:150px;max-width:260px;padding:10px 12px;border-radius:8px;background:var(--ink);color:var(--bg);box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:12.5px;line-height:1.35;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease}
+.tip.on{opacity:1;transform:none}
+.tip .th{display:block;margin-bottom:5px;font-size:12px;opacity:.8}
+.tip .tl{display:flex;align-items:center;gap:8px;margin-top:3px}
+.tip .tk{width:14px;flex:none;border-top:2px solid var(--c)}
+.tip strong{color:inherit;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.tip .tn{opacity:.85}
+
+/* callout and TL;DR */
+.callout{margin-top:clamp(28px,4vw,40px);padding:18px 22px;background:var(--soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0}
+.callout p+p{margin-top:.6em}
+.callout .read-time{color:var(--muted);font-size:14px;font-style:italic}
+.tldr-h{margin-top:clamp(36px,5vw,52px);font:600 24px/1.25 var(--font);letter-spacing:-.015em}
+.tldr{display:grid;gap:14px;margin:16px 0 0;padding:0;list-style:none;counter-reset:t}
+.tldr li{position:relative;padding-left:40px;counter-increment:t}
+.tldr li::before{content:counter(t);position:absolute;left:0;top:2px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--bg);font:600 13px/1 var(--font)}
+
+/* sections */
+.section{padding-top:clamp(52px,7.5vw,88px)}
+.section>h2{margin-bottom:20px;max-width:24em}
+h2[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 56px + 20px)}
+.prose>*+*{margin-top:1.1em}
+.lead{font-size:19px;line-height:1.6}
+.sub{margin:clamp(40px,5.5vw,60px) 0 12px}
+.note{margin-top:14px;color:var(--muted);font-size:14.5px;line-height:1.55}
+.hint{margin-top:12px;color:var(--muted);font-size:14.5px}
+.btn-row{margin-top:20px}
+.after{margin-top:14px;font-size:15.5px}
+.takeaway{margin-top:18px}
+
+.steps{display:grid;gap:14px;margin:20px 0 0;padding:0;list-style:none;counter-reset:s}
+.steps li{position:relative;padding-left:40px;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;color:var(--ink);font:600 13px/1 var(--font)}
+.hash{display:block;margin-top:8px;padding:10px 12px;border-radius:6px;background:var(--soft);color:var(--text);font:400 12.5px/1.5 var(--mono);overflow-wrap:anywhere}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{background:var(--soft);color:var(--ink);font:600 13.5px/1.35 var(--font);white-space:nowrap}
+tbody th{color:var(--ink);font-weight:600}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+th.num,td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.metric{font-weight:600;color:var(--ink)}
+.th-key{display:inline-flex;align-items:center;gap:8px}
+.th-key i{width:10px;height:10px;flex:none;border-radius:2px}
+tr.ours td:first-child{box-shadow:inset 3px 0 0 var(--s-small)}
+tr.ours-llemr td:first-child{box-shadow:inset 3px 0 0 var(--s-llemr)}
+tr.ours td,tr.ours-llemr td{background:var(--soft);font-weight:600;color:var(--ink)}
+.caption{margin-top:10px;color:var(--muted);font-size:14px;line-height:1.55}
+.caption strong{color:var(--ink)}
+@media (min-width:640px){.tbl-stack tbody th{white-space:nowrap}}
+@media (max-width:639px){
+  .tbl-stack table,.tbl-stack tbody,.tbl-stack tr,.tbl-stack td,.tbl-stack th{display:block}
+  .tbl-stack thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .tbl-stack tr{padding:14px 16px;border-bottom:1px solid var(--line)}
+  .tbl-stack tr:last-child{border-bottom:0}
+  .tbl-stack th,.tbl-stack td{padding:0;border:0}
+  .tbl-stack tbody th{margin-bottom:6px}
+  .tbl-stack td{margin-top:8px}
+  .tbl-stack td::before{content:attr(data-label);display:block;margin-bottom:1px;padding-left:8px;border-left:3px solid var(--line-2);color:var(--muted);font:600 12.5px/1.4 var(--font)}
+  .tbl-stack td.c-small::before{border-left-color:var(--s-small)}
+  .tbl-stack td.c-llemr::before{border-left-color:var(--s-llemr)}
+}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+@media (min-width:720px){.stats.s4{grid-template-columns:repeat(4,minmax(0,1fr))}.stats.s3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:719px){.stats.s3{grid-template-columns:minmax(0,1fr)}}
+.stat{padding:16px 18px;border-radius:10px;background:var(--soft)}
+.stat b{display:block;color:var(--ink);font:600 28px/1.1 var(--font);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:6px;color:var(--muted);font-size:14px;line-height:1.45}
+.stats.cost b{font-size:26px}
+
+/* details */
+details{border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+summary{display:flex;align-items:center;gap:10px;padding:16px 20px;color:var(--ink);font:600 16px/1.3 var(--font);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";margin-left:auto;color:var(--muted);font:400 22px/1 var(--font)}
+details[open]>summary::after{content:"\2212"}
+details.twin{margin-top:12px;border:0;border-radius:0;background:none}
+details.twin>summary{justify-content:flex-start;padding:4px 0;color:var(--muted);font-size:13.5px;font-weight:500}
+details.twin>summary::after{margin-left:4px;font-size:16px}
+details.twin .table-wrap{margin-top:8px}
+details.more{margin-top:clamp(40px,5.5vw,60px)}
+.more-body{padding:0 20px 22px}
+.more-body ol{margin:16px 0 0;padding-left:20px;color:var(--text);font-size:14.5px}
+.more-body li+li{margin-top:6px}
+
+/* takeaways */
+.ticks{display:grid;gap:12px;margin:14px 0 0;padding:0;list-style:none}
+.ticks li{position:relative;padding-left:28px}
+.ticks li::before{content:"";position:absolute;left:2px;top:.62em;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.ticks.no li::before{left:1px;top:.58em;width:12px;height:12px;border:2px solid var(--muted);background:transparent}
+
+/* LecTrace and report */
+.states{margin:14px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.states a{display:grid;grid-template-columns:5.4em minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:14px 8px;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
+.states a:hover{background:var(--soft)}
+.st-steps{color:var(--muted);font:500 12.5px/1.4 var(--mono);white-space:nowrap}
+.st-title{color:var(--ink);font:600 16px/1.35 var(--font)}
+.st-go{grid-row:1;grid-column:3;align-self:center;color:var(--accent-ink)}
+.st-mono{grid-column:2;color:var(--muted);font:400 12.5px/1.5 var(--mono);overflow-wrap:anywhere}
+.toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,auto);grid-auto-flow:column;gap:0 28px;margin:16px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+@media (max-width:479px){.toc{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-flow:row}}
+.toc li{display:flex;align-items:baseline;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}
+.toc li span{flex:none;width:30px;color:var(--muted);font:500 12px/1.4 var(--mono)}
+
+/* footer */
+.site-footer{margin-top:clamp(64px,9vw,104px);padding-block:36px 56px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.foot-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+.refs{margin:24px 0 0;padding-left:18px;font-size:13px;line-height:1.55}
+.refs li+li{margin-top:5px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (forced-colors:active){.lineS.seg-llemr{stroke-dasharray:6 4}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M5 3h8v8M13 3 3 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h5l2.2-6.5 4.2 13 2.4-6.5H22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="ICU Numeracy, back to top"><svg aria-hidden="true"><use href="#i-pulse"/></svg><span class="name">ICU Numeracy</span></a>
+    <div class="nav-wrap">
+      <nav class="nav" aria-label="Sections">
+        <a href="#question">Question</a>
+        <a href="#approach">Approach</a>
+        <a href="#results">Results</a>
+        <a href="#takeaways">Takeaways</a>
+        <a href="#lectrace">LecTrace</a>
+        <a href="#report">Report</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="col">
+    <div class="title-block">
+      <h1>Can a language model read the numbers in an ICU chart?</h1>
+      <p class="meta">MD6329 Deep Learning for Healthcare AI · Mini-project · October 2026</p>
+      <!-- Byline: add your name and student ID here, e.g. <p class="meta">Your Name · A0000000X</p> -->
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality" target="_blank" rel="noopener noreferrer">Open LecTrace presentation <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg><span class="sr-only">(opens in a new tab)</span></a>
+        <a class="btn btn-ghost" href="https://drive.google.com/file/d/1LZTc7XcYvaMZZ-i_CAaOzEnpt_NzADFq/view?usp=sharing" target="_blank" rel="noopener noreferrer">Download report <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg><span class="sr-only">(opens in a new tab)</span></a>
+      </div>
+    </div>
+
+    <figure class="fig" aria-labelledby="fig1-cap">
+      <ul class="legend" aria-label="Legend">
+        <li><span class="key-sq s-small"></span>Small model, trained from scratch</li>
+        <li><span class="key-sq s-llemr"></span>Llemr-v1, fine-tuned 7B language model</li>
+      </ul>
+      <div class="cover-grid">
+        <div>
+          <p class="fig-t">Test AUROC</p>
+          <p class="fig-s">PhysioNet 2012, split 1: 1,199 test patients, 158 deaths</p>
+          <div class="chart" id="chart-auroc"><div id="plot-auroc"></div></div>
+        </div>
+        <div>
+          <p class="fig-t">Predicted risk as lactate rises</p>
+          <p class="fig-s">Change in mean risk, in percentage points, for 633 patients</p>
+          <div class="chart" id="chart-mini"><div id="plot-mini"></div></div>
+        </div>
+      </div>
+      <figcaption id="fig1-cap"><strong>Figure 1.</strong> Test AUROC on held-out patients: the small model scores higher (difference −0.086, 95% CI −0.119 to −0.057). Change in predicted risk when one lactate value is raised from 1 to 8 mmol/L: the small model’s risk rises and Llemr’s does not. Both results are explained below.</figcaption>
+    </figure>
+
+    <div class="callout">
+      <p><strong>Question.</strong> Should we fine-tune a large language model built for health records, or train a small model from scratch? We compared Llemr, a 7-billion-parameter EHR language model, with a 0.29-million-parameter event encoder on one standard benchmark: predicting in-hospital death from the first 48 hours in the ICU. The protocol was fixed before any Llemr result existed, and three diagnostics then asked how each model uses the measured values.</p>
+      <p class="read-time">About 9 minutes to read.</p>
+    </div>
+
+    <h2 class="tldr-h">TL;DR</h2>
+    <ol class="tldr">
+      <li><strong>The small model wins.</strong> Test AUROC is 0.882 against 0.795 on 1,199 held-out patients (difference −0.086, 95% CI −0.119 to −0.057). AUPRC is 0.539 against 0.409. A longer Llemr run, requested after the result was known (post hoc), reached 0.782 and did not close the gap.</li>
+      <li><strong>It is far cheaper.</strong> It trains in 30 s on one GPU, where Llemr needs 4,539 s: about 150 times the time, 1,200 times the trained parameters and 25,000 times the total parameters.</li>
+      <li><strong>The gap points to how numbers enter the model.</strong> Shuffle the measured values across patients and both models fall to about 0.66 to 0.67 AUROC. Raise one lactate value from 1 to 8 mmol/L and the small model’s mean risk rises 1.08 points, while Llemr’s does not rise. The frozen text encoder gives almost the same vector for “Lactate 1.5” and “Lactate 8” (cosine 0.996).</li>
+      <li><strong>The scope is narrow.</strong> One dataset, one split, one seed and one fine-tuning recipe. The diagnostics are consistent with a numeracy problem but do not prove one, and nothing here says that language models are worse in general.</li>
+    </ol>
+
+    <section class="section" aria-labelledby="question">
+      <h2 id="question">Fine-tune a large pretrained model, or train a small one from scratch?</h2>
+      <div class="prose">
+        <p>An ICU records dozens of measurements per patient at irregular times: heart rate, creatinine, lactate and more. Predicting who will die in hospital from the first 48 hours supports triage and resource planning. It is a standard benchmark for models of clinical time series (PhysioNet 2012, 11,988 patients, 36 variables).</p>
+        <p>Language models are now offered as general solutions for health records. Llemr, from NeurIPS 2024, writes every clinical event as text and reads it with a 7-billion-parameter model. It is reported to reach results comparable to state-of-the-art baselines after fine-tuning for mortality prediction. We asked how it fares against a small, purpose-built model trained from scratch on the same patients.</p>
+        <p>A first pilot put a general-purpose language model (Qwen3-0.6B) on top of our encoder. It did not beat the encoder alone: mean test AUROC over three splits was 0.871 frozen and 0.864 LoRA-tuned, against 0.875. That left open whether a model pretrained on clinical events would do better.</p>
+      </div>
+      <h3 class="sub">How we kept the comparison honest</h3>
+      <ol class="steps">
+        <li><strong>Fix the protocol.</strong> The specification was hashed with SHA-256 before any Llemr result existed. Later changes are logged as amendments with their timing.
+          <code class="hash">c637e496b060adc7b93689cb779518ff8b0142ae6ca3a98c7adafdd643c53ab0</code></li>
+        <li><strong>Train both models.</strong> Same patients, same events, same static information, same test set.</li>
+        <li><strong>Test once.</strong> Each model is evaluated on the test set a single time. A paired bootstrap with 1,000 resamples compares them.</li>
+        <li><strong>Diagnose.</strong> Three probes ask how each model uses the numbers: shuffle the values, raise one lactate value, and test the text encoder.</li>
+      </ol>
+      <div class="callout">
+        <p><strong>Decision rule.</strong> If the 95% interval of the AUROC difference excludes 0, one model is better. Otherwise there is no detectable difference.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="approach">
+      <h2 id="approach">Two models read the same patients</h2>
+      <p class="lead">Every measurement becomes an event with a variable, a value and a time. The two models differ in how an event becomes a token.</p>
+      <div class="table-wrap tbl-stack">
+        <table>
+          <caption class="sr-only">The two models compared</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Property</span></th>
+              <th scope="col"><span class="th-key"><i style="background:var(--s-small)"></i>Small model</span></th>
+              <th scope="col"><span class="th-key"><i style="background:var(--s-llemr)"></i>Llemr-v1 (released)</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">What it is</th><td class="c-small" data-label="Small model">A STraTS-style event encoder, called <code>no_llm</code> in the code. Trained from scratch.</td><td class="c-llemr" data-label="Llemr-v1">An EHR language model from NeurIPS 2024, fine-tuned as in its paper.</td></tr>
+            <tr><th scope="row">One event becomes</th><td class="c-small" data-label="Small model">A variable id, a standardised value and two time features. A variable embedding and two small MLPs are summed into one 128-dimensional token.</td><td class="c-llemr" data-label="Llemr-v1">A sentence such as “Blood Lactate Blood Gas: 1.3 mmol/L”, read by a frozen BiomedBERT. Time, value and duration are appended as three raw numbers, and an MLP projector makes one token.</td></tr>
+            <tr><th scope="row">Tokens to risk</th><td class="c-small" data-label="Small model">A 2-layer Transformer, mean pooling and one linear layer.</td><td class="c-llemr" data-label="Llemr-v1">Vicuna-7B with a LoRA adapter, and a linear head on the last token.</td></tr>
+            <tr><th scope="row">Trained parameters</th><td class="c-small" data-label="Small model">0.29 M</td><td class="c-llemr" data-label="Llemr-v1">341 M</td></tr>
+            <tr><th scope="row">Total parameters</th><td class="c-small" data-label="Small model">0.29 M</td><td class="c-llemr" data-label="Llemr-v1">7.1 B</td></tr>
+            <tr><th scope="row">Training time</th><td class="c-small" data-label="Small model">30 s</td><td class="c-llemr" data-label="Llemr-v1">4,539 s, plus 336 s of validation</td></tr>
+            <tr><th scope="row">Hardware</th><td class="c-small" data-label="Small model">One RTX 4090</td><td class="c-llemr" data-label="Llemr-v1">One RTX 4090, 19.9 GiB peak memory</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption"><strong>Table 1.</strong> The two models.</p>
+      <div class="stats s4">
+        <div class="stat"><b>11,988</b><span>ICU patients in PhysioNet 2012</span></div>
+        <div class="stat"><b>36</b><span>variables over the first 48 hours</span></div>
+        <div class="stat"><b>14.2%</b><span>died in hospital (1,707 patients)</span></div>
+        <div class="stat"><b>1,199</b><span>test patients in split 1, with 158 deaths</span></div>
+      </div>
+      <p class="note">Split 1 has 9,590 training, 1,199 validation and 1,199 test patients. The splits come from Raindrop (Zhang et al., ICLR 2022).</p>
+    </section>
+
+    <section class="section" aria-labelledby="results">
+      <h2 id="results">What we found</h2>
+      <p class="lead">The headline comparison is the pre-registered one. Every other number on this page comes from the same 1,199 test patients.</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Test results on split 1</caption>
+          <thead>
+            <tr>
+              <th scope="col">Metric</th>
+              <th scope="col" class="num"><span class="th-key"><i style="background:var(--s-small)"></i>Small model</span></th>
+              <th scope="col" class="num"><span class="th-key"><i style="background:var(--s-llemr)"></i>Llemr-v1</span></th>
+              <th scope="col" class="num">Llemr minus small [95% CI]</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric">AUROC (primary)</td><td class="num">0.8815</td><td class="num">0.7951</td><td class="num">−0.0864 [−0.1186, −0.0568]</td></tr>
+            <tr><td class="metric">AUPRC</td><td class="num">0.5393</td><td class="num">0.4088</td><td class="num">−0.1305 [−0.1929, −0.0638]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption"><strong>Table 2.</strong> Test results on split 1. The bootstrap uses 1,000 paired resamples with seed 1.</p>
+      <p class="after">AUROC is the chance that a patient who died gets a higher risk than one who survived, so 0.5 is chance. AUPRC suits the 14% death rate.</p>
+      <p class="after">A longer fine-tuning run for Llemr was started after this result was known (post hoc). It reached 0.7824 AUROC and 0.3782 AUPRC and did not close the gap. It is not the headline.</p>
+
+      <h3 class="sub">Shuffle the values, keep everything else</h3>
+      <p>For every variable we permute its measured values across the test patients. Each patient keeps the same variables, counts and times, so only the numbers are wrong. Both models get the same shuffle. If a model uses the numbers, this should cost it much of its accuracy. What remains comes from which tests were taken and when, and from the static facts.</p>
+      <figure class="fig" aria-labelledby="fig2-cap">
+        <ul class="legend" aria-label="Legend">
+          <li><span class="key-sq s-small"></span>Small model</li>
+          <li><span class="key-sq s-llemr"></span>Llemr-v1</li>
+          <li><span class="key-dot"></span>As recorded</li>
+          <li><span class="key-dot hollow"></span>Values shuffled</li>
+        </ul>
+        <div class="chart" id="chart-shuffle"><div id="plot-shuffle"></div></div>
+        <figcaption id="fig2-cap"><strong>Figure 2.</strong> Test AUROC as recorded (filled dot) and with the measured values shuffled across patients (hollow dot).</figcaption>
+        <details class="twin">
+          <summary>Table view</summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Model</th><th scope="col" class="num">AUROC recorded</th><th scope="col" class="num">AUROC shuffled</th><th scope="col" class="num">AUPRC recorded</th><th scope="col" class="num">AUPRC shuffled</th></tr></thead>
+              <tbody>
+                <tr><td>Small model</td><td class="num">0.8815</td><td class="num">0.6605</td><td class="num">0.5393</td><td class="num">0.2030</td></tr>
+                <tr><td>Llemr-v1</td><td class="num">0.7951</td><td class="num">0.6730</td><td class="num">0.4088</td><td class="num">0.2576</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </figure>
+      <p class="takeaway">Both models fall to about 0.66 to 0.67. The real values are worth <strong>+0.221</strong> AUROC to the small model and <strong>+0.122</strong> to Llemr. AUPRC falls from 0.539 to 0.203 for the small model and from 0.409 to 0.258 for Llemr.</p>
+
+      <h3 class="sub">Raise one lactate value, watch the risk</h3>
+      <p>For the 633 test patients with a lactate measurement, we set the latest lactate to 1, 2, 4, 6 and 8 mmol/L and averaged the predicted risk. Higher lactate is a known marker of higher mortality (normal is below about 2 mmol/L), so a model that reads the number should not lower its risk.</p>
+      <figure class="fig" aria-labelledby="fig3-cap">
+        <ul class="legend" aria-label="Legend">
+          <li><span class="key-line s-small"></span>Small model</li>
+          <li><span class="key-line s-llemr"></span>Llemr-v1</li>
+        </ul>
+        <div class="chart" id="chart-lactate"><div id="plot-lactate"></div></div>
+        <figcaption id="fig3-cap"><strong>Figure 3.</strong> Change in mean predicted risk, in percentage points, as the latest lactate is set to 1 to 8 mmol/L. 0 is the risk with lactate at 1 mmol/L.</figcaption>
+        <details class="twin">
+          <summary>Table view</summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col" class="num">Lactate set to (mmol/L)</th><th scope="col" class="num">Small: mean risk</th><th scope="col" class="num">Small: change (pp)</th><th scope="col" class="num">Llemr: mean risk</th><th scope="col" class="num">Llemr: change (pp)</th></tr></thead>
+              <tbody>
+                <tr><td class="num">1</td><td class="num">0.3443</td><td class="num">0</td><td class="num">0.2698</td><td class="num">0</td></tr>
+                <tr><td class="num">2</td><td class="num">0.3442</td><td class="num">−0.01</td><td class="num">0.2695</td><td class="num">−0.03</td></tr>
+                <tr><td class="num">4</td><td class="num">0.3452</td><td class="num">+0.09</td><td class="num">0.2691</td><td class="num">−0.07</td></tr>
+                <tr><td class="num">6</td><td class="num">0.3492</td><td class="num">+0.49</td><td class="num">0.2687</td><td class="num">−0.10</td></tr>
+                <tr><td class="num">8</td><td class="num">0.3551</td><td class="num">+1.08</td><td class="num">0.2685</td><td class="num">−0.12</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note">Both models were trained with a class weight, so their probabilities are uncalibrated. Compare the changes, not the levels.</p>
+        </details>
+      </figure>
+      <p class="takeaway">At 8 mmol/L the small model’s mean risk is <strong>1.08</strong> points higher than at 1. Llemr’s is <strong>0.12</strong> points lower.</p>
+
+      <h3 class="sub">Why might Llemr miss the numbers?</h3>
+      <p>Llemr writes each event as a sentence and passes it to a frozen BiomedBERT text encoder. We compared the encoder’s vectors for low, normal and high values of lactate, mean blood pressure and heart rate. A cosine of 1 means the same vector.</p>
+      <div class="stats s3">
+        <div class="stat"><b>0.9958</b><span>“Lactate 1.5” against “Lactate 8 mmol/L”. Almost the same vector.</span></div>
+        <div class="stat"><b>0.9969</b><span>Average cosine for the same variable with a different value (9 pairs).</span></div>
+        <div class="stat"><b>0.9435</b><span>Average cosine for different variables (27 pairs).</span></div>
+      </div>
+      <p class="note">Changing the value moves the vector less than changing the variable does. The value also reaches the model as one raw, unnormalised number beside the vector. These probes are consistent with a numeracy problem. They do not prove one.</p>
+      <p class="note">Llemr was not overfitting. Its training loss fell only from 1.18 to about 1.0, where a constant predictor scores 1.19. The small model’s fell from 1.06 to 0.68.</p>
+
+      <h3 class="sub">What it costs</h3>
+      <div class="stats s4 cost">
+        <div class="stat"><b>≈150×</b><span>the training time of the small model: 4,539 s against 30 s.</span></div>
+        <div class="stat"><b>≈1,200×</b><span>the trained parameters: 341 million against 0.29 million.</span></div>
+        <div class="stat"><b>≈25,000×</b><span>the total parameters: 7.1 billion against 0.29 million.</span></div>
+        <div class="stat"><b>US$2.96</b><span>for the whole Llemr GPU stage: 4.74 hours of a rented RTX 4090, including setup, the post hoc run and the diagnostics.</span></div>
+      </div>
+
+      <details class="more">
+        <summary>Where 0.88 sits among published results</summary>
+        <div class="more-body">
+          <p class="note" style="margin-top:0;max-width:70ch">The small model is in the top tier of published results. Differences below about one point are within the variation between papers. Llemr-v1 fine-tuned by us sits just above the LLM-based time-series methods and below GRU-D. All rows use the processed PhysioNet 2012 data (11,988 patients, 80/10/10 splits). Values are AUROC and AUPRC in %, mean ± SD over 3 to 5 runs. Our small model is the mean over splits 1 to 3; split 1 alone is 88.2 and 53.9.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Method</th><th scope="col" class="num">AUROC</th><th scope="col" class="num">AUPRC</th></tr></thead>
+              <tbody>
+                <tr><td>DBGL (arXiv 2026)</td><td class="num">88.1 ± 0.4</td><td class="num">56.3 ± 1.0</td></tr>
+                <tr><td>KEDGN (NeurIPS 2024)</td><td class="num">87.8 ± 0.5</td><td class="num">54.5 ± 1.5</td></tr>
+                <tr><td>GSNF (arXiv 2026)</td><td class="num">87.5 ± 0.3</td><td class="num">56.3 ± 0.4</td></tr>
+                <tr class="ours"><td>Small model (ours, from scratch, splits 1–3)</td><td class="num">87.5 ± 0.6</td><td class="num">54.9 ± 0.9</td></tr>
+                <tr><td>STraTS (rerun reported by KEDGN)</td><td class="num">86.7 ± 0.7</td><td class="num">52.1 ± 1.5</td></tr>
+                <tr><td>Hi-Patch (as reported by GSNF)</td><td class="num">86.5 ± 0.6</td><td class="num">53.3 ± 0.9</td></tr>
+                <tr><td>VITAL, frozen GPT-2 (arXiv 2025)</td><td class="num">86.0 ± 1.4</td><td class="num">54.9 ± 4.2</td></tr>
+                <tr><td>Warpformer (range over papers)</td><td class="num">85.4–86.6</td><td class="num">50.4–54.8</td></tr>
+                <tr><td>ViTST (NeurIPS 2023)</td><td class="num">85.1 ± 0.8</td><td class="num">51.1 ± 4.1</td></tr>
+                <tr><td>mTAND (as reported in Raindrop and ViTST)</td><td class="num">84.2 ± 0.8</td><td class="num">48.2 ± 3.4</td></tr>
+                <tr><td>Raindrop (ICLR 2022)</td><td class="num">82.8 ± 1.7</td><td class="num">44.0 ± 3.0</td></tr>
+                <tr><td>GRU-D (as reported in Raindrop and ViTST)</td><td class="num">81.9 ± 2.1</td><td class="num">46.1 ± 4.7</td></tr>
+                <tr class="ours-llemr"><td>Llemr-v1 fine-tuned (ours, split 1 only)</td><td class="num">79.5</td><td class="num">40.9</td></tr>
+                <tr><td>LLM time-series methods (Time-LLM, CALF, FSCA, S²IP)</td><td class="num">72.2–78.8</td><td class="num">29.0–38.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ol>
+            <li>The same method differs by up to about 5 points between papers (Warpformer 81.9 to 86.6, GRU-D 79.6 to 84.5). Compare tiers, not decimals.</li>
+            <li>Protocols differ in detail. Some papers vary seeds on one split, others use Raindrop’s five splits. Ours uses three of the five, one run each.</li>
+            <li>Published rows are as reported in the cited papers, checked on 22 October 2026.</li>
+          </ol>
+        </div>
+      </details>
+    </section>
+
+    <section class="section" aria-labelledby="takeaways">
+      <h2 id="takeaways">What this shows, and what it does not</h2>
+      <h3 class="sub" style="margin-top:28px">The evidence supports</h3>
+      <ul class="ticks">
+        <li>On PhysioNet 2012 split 1, with Llemr-v1 fine-tuned as in its paper, the small model scored higher on AUROC and AUPRC. The interval of the difference excludes 0.</li>
+        <li>The numbers carry the signal. With the values shuffled, both models fall to about 0.66 to 0.67 AUROC.</li>
+        <li>Llemr’s predicted risk does not rise with lactate, and the small model’s does. This is consistent with a numeracy problem in how numbers reach Llemr.</li>
+        <li>Training Llemr for longer did not help. The post hoc 5-epoch run reached 0.782 AUROC.</li>
+        <li>For health care, check a model with counterfactuals (change one input and watch the output), not only with AUROC.</li>
+      </ul>
+      <h3 class="sub">It does not support</h3>
+      <ul class="ticks no">
+        <li><strong>That fine-tuning language models is worse in general.</strong> This is one dataset, one split and one seed for Llemr, one language model and one recipe without tuning.</li>
+        <li><strong>That the diagnostics prove why Llemr scored lower.</strong> A second handicap is a data mismatch. 84.7% of the events are bedside values such as vital signs, which Llemr’s released training events did not include, and its lab sentences always ended in “normal” or “abnormal”, which this data does not have.</li>
+        <li><strong>State of the art.</strong> The small model is in the top tier of published results, and differences below about one point are within the variation between papers.</li>
+        <li><strong>Calibrated risks.</strong> Both models were trained with a class weight, so their probabilities are uncalibrated. The study is retrospective.</li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="lectrace">
+      <h2 id="lectrace">LecTrace presentation</h2>
+      <p>LecTrace replays a Python script step by step, with the code next to the values of its variables. Our lecture has 47 steps and takes about 10 minutes. It follows one real lactate reading through the small model, edits it, and then shows the recorded results for both models.</p>
+      <p class="btn-row"><a class="btn btn-primary" href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality" target="_blank" rel="noopener noreferrer">Open LecTrace presentation <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg><span class="sr-only">(opens in a new tab)</span></a></p>
+      <p class="hint">Or jump straight to one of the four states we chose to show, or to the key result:</p>
+      <ul class="states">
+        <li><a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality&amp;step=6" target="_blank" rel="noopener noreferrer"><span class="st-steps">Steps 7–14</span><span class="st-title">A chart row becomes numbers</span><svg class="ico st-go" aria-hidden="true"><use href="#i-arrow"/></svg><span class="st-mono">04:52 · Lactate · 1.3 mmol/L → z −0.676, t_abs 0.1014, dt 1.6227</span><span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality&amp;step=14" target="_blank" rel="noopener noreferrer"><span class="st-steps">Steps 15–22</span><span class="st-title">An event becomes a token</span><svg class="ico st-go" aria-hidden="true"><use href="#i-arrow"/></svg><span class="st-mono">variable + value + time embeddings → one 128-d token</span><span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality&amp;step=22" target="_blank" rel="noopener noreferrer"><span class="st-steps">Steps 23–30</span><span class="st-title">392 tokens become one risk</span><svg class="ico st-go" aria-hidden="true"><use href="#i-arrow"/></svg><span class="st-mono">392 × 128 → mean → logit −4.93 → risk 0.72%</span><span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality&amp;step=30" target="_blank" rel="noopener noreferrer"><span class="st-steps">Steps 31–39</span><span class="st-title">What if the lactate were 4 mmol/L?</span><svg class="ico st-go" aria-hidden="true"><use href="#i-arrow"/></svg><span class="st-mono">edit one reading, then 633 patients, then the text encoder</span><span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality&amp;step=39" target="_blank" rel="noopener noreferrer"><span class="st-steps">Steps 40–47</span><span class="st-title">Key result</span><svg class="ico st-go" aria-hidden="true"><use href="#i-arrow"/></svg><span class="st-mono">AUROC 0.8815 against 0.7951, shuffle, bootstrap, limits</span><span class="sr-only">(opens in a new tab)</span></a></li>
+      </ul>
+      <p class="note">Patient 139655 is one example. The population statements come from the recorded runs over 633 patients.</p>
+    </section>
+
+    <section class="section" aria-labelledby="report">
+      <h2 id="report">Report</h2>
+      <p>A NeurIPS-style write-up of the whole project. The appendices hold the amendment log, the fidelity check and the account of how AI agents were used.</p>
+      <ul class="toc" aria-label="Contents of the report">
+        <li><span></span>Abstract</li>
+        <li><span>1</span>Problem formulation</li>
+        <li><span>2</span>Related work</li>
+        <li><span>3</span>Data</li>
+        <li><span>4</span>Approach</li>
+        <li><span>5</span>Experiments</li>
+        <li><span>6</span>Conclusion</li>
+        <li><span>A–E</span>Appendices</li>
+      </ul>
+      <p class="btn-row"><a class="btn btn-primary" href="https://drive.google.com/file/d/1LZTc7XcYvaMZZ-i_CAaOzEnpt_NzADFq/view?usp=sharing" target="_blank" rel="noopener noreferrer">Download report <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg><span class="sr-only">(opens in a new tab)</span></a></p>
+      <p class="hint">Opens the shared PDF on Google Drive.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="col">
+    <p><strong>MD6329 Deep Learning for Healthcare AI</strong><br>2026 mini-project</p>
+    <div class="foot-links">
+      <a href="https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality" target="_blank" rel="noopener noreferrer">LecTrace presentation<span class="sr-only"> (opens in a new tab)</span></a>
+      <a href="https://drive.google.com/file/d/1LZTc7XcYvaMZZ-i_CAaOzEnpt_NzADFq/view?usp=sharing" target="_blank" rel="noopener noreferrer">Report<span class="sr-only"> (opens in a new tab)</span></a>
+      <a href="#top">Back to top</a>
+    </div>
+    <ol class="refs">
+      <li>Silva et al. (2012). Predicting in-hospital mortality of ICU patients: the PhysioNet/Computing in Cardiology Challenge 2012. Computing in Cardiology 39.</li>
+      <li>Wu et al. (2024). Instruction tuning large language models to understand electronic health records (Llemr). NeurIPS Datasets and Benchmarks.</li>
+      <li>Tipirneni and Reddy (2022). Self-supervised transformer for sparse and irregularly sampled multivariate clinical time-series (STraTS). ACM TKDD 16(6).</li>
+      <li>Zhang et al. (2022). Graph-guided network for irregularly sampled multivariate time series (Raindrop). ICLR.</li>
+    </ol>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var MINUS = '−';
+  var HEADER_H = 56;
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  function $(id) { return document.getElementById(id); }
+
+  /* in-page links scroll inside the page frame */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!id || id === 'top') { e.preventDefault(); window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); return; }
+    var t = $(id);
+    if (!t) return;
+    e.preventDefault();
+    t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
+
+  /* helpers */
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    if (attrs) for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function text(parent, x, y, str, cls, anchor) {
+    var t = el('text', { x: x, y: y, 'class': cls }, parent);
+    if (anchor) t.setAttribute('text-anchor', anchor);
+    t.textContent = str;
+    return t;
+  }
+  function signed(v, d) {
+    var s = Math.abs(v).toFixed(d);
+    if (Number(s) === 0) return s;
+    return (v < 0 ? MINUS : '+') + s;
+  }
+  function makeTip(container) {
+    var node = document.createElement('div');
+    node.className = 'tip';
+    node.setAttribute('aria-hidden', 'true');
+    container.appendChild(node);
+    return {
+      show: function (head, rows, x, y) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+        if (head) { var h = document.createElement('span'); h.className = 'th'; h.textContent = head; node.appendChild(h); }
+        rows.forEach(function (r) {
+          var line = document.createElement('div'); line.className = 'tl ' + (r.seg || '');
+          var k = document.createElement('span'); k.className = 'tk'; line.appendChild(k);
+          var v = document.createElement('strong'); v.textContent = r.value; line.appendChild(v);
+          var l = document.createElement('span'); l.className = 'tn'; l.textContent = r.label; line.appendChild(l);
+          node.appendChild(line);
+        });
+        node.classList.add('on');
+        var w = node.offsetWidth, hh = node.offsetHeight, cw = container.clientWidth;
+        var left = x + 14;
+        if (left + w > cw) left = x - w - 14;
+        if (left < 0) left = Math.max(0, (cw - w) / 2);
+        var top = y - hh - 10;
+        if (top < 0) top = y + 18;
+        node.style.left = left + 'px';
+        node.style.top = top + 'px';
+      },
+      hide: function () { node.classList.remove('on'); }
+    };
+  }
+  var tips = {};
+  function tipFor(boxId) { return tips[boxId] || (tips[boxId] = makeTip($(boxId))); }
+
+  /* data (all values from the saved result files; exact values are used so that rounding matches the tables) */
+  var MODELS = [
+    { name: 'Small model', sub: 'trained from scratch', seg: 'seg-small', rec: 0.881504, shuf: 0.660490, auprc: 0.5393 },
+    { name: 'Llemr-v1', sub: 'fine-tuned', seg: 'seg-llemr', rec: 0.795061, shuf: 0.673038, auprc: 0.4088 }
+  ];
+  var LACT = {
+    x: [1, 2, 4, 6, 8],
+    small: [0, -0.0116, 0.0938, 0.4886, 1.0787],
+    llemr: [0, -0.0308, -0.0717, -0.1049, -0.1237]
+  };
+
+  /* cover chart: AUROC bars from zero, chance line at 0.5 */
+  function drawAuroc() {
+    var host = $('plot-auroc');
+    if (!host) return;
+    var tip = tipFor('chart-auroc');
+    var old = host.querySelector('svg'); if (old) host.removeChild(old);
+    var W = Math.max(260, Math.round(host.clientWidth));
+    var rowH = 78, top = 6, L = 2, R = 50, barH = 22, r = 4;
+    var H = top + MODELS.length * rowH + 44;
+    function X(v) { return L + v * (W - L - R); }
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img',
+      'aria-label': 'Test AUROC. Small model 0.8815. Llemr-v1 0.7951. 0.5 is chance.' }, host);
+    var bottom = top + MODELS.length * rowH;
+    [0, 0.5, 1].forEach(function (v) {
+      el('line', { x1: X(v), x2: X(v), y1: top, y2: bottom, 'class': v === 0 ? 'g-axis' : 'g-line' }, svg);
+      text(svg, X(v), bottom + 18, v === 0 ? '0' : (v === 1 ? '1' : '0.5'), 't-tick', v === 0 ? 'start' : 'middle');
+    });
+    text(svg, L, bottom + 38, 'AUROC (0.5 = chance, 1 = perfect ranking)', 't-sub', 'start');
+    MODELS.forEach(function (m, i) {
+      var y0 = top + i * rowH, by = y0 + 30, x0 = X(0), x1 = X(m.rec);
+      var g = el('g', { 'class': m.seg }, svg);
+      var lab = text(g, L, y0 + 16, m.name, 't-label', 'start');
+      var sub = el('tspan', { 'class': 't-sub', dx: 8 }, lab); sub.textContent = m.sub; sub.style.fontWeight = '400';
+      var d = 'M' + x0 + ' ' + by + ' H' + (x1 - r) + ' a' + r + ' ' + r + ' 0 0 1 ' + r + ' ' + r +
+        ' V' + (by + barH - r) + ' a' + r + ' ' + r + ' 0 0 1 ' + (-r) + ' ' + r + ' H' + x0 + ' Z';
+      el('path', { d: d, 'class': 'f-c' }, g);
+      text(g, x1 + 8, by + barH / 2 + 5, m.rec.toFixed(3), 't-big', 'start');
+      var hit = el('rect', { x: 0, y: y0, width: W, height: rowH - 8, 'class': 'hit', tabindex: 0, role: 'img',
+        'aria-label': m.name + ', test AUROC ' + m.rec.toFixed(4) + ', AUPRC ' + m.auprc.toFixed(4) }, g);
+      function show() {
+        tip.show(m.name, [{ value: 'AUROC ' + m.rec.toFixed(4), label: '', seg: m.seg }, { value: 'AUPRC ' + m.auprc.toFixed(4), label: '', seg: m.seg }], x1, by - 4);
+      }
+      hit.addEventListener('pointerenter', show);
+      hit.addEventListener('pointerdown', show);
+      hit.addEventListener('focus', show);
+      hit.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') tip.hide(); });
+      hit.addEventListener('blur', function () { tip.hide(); });
+    });
+  }
+
+  /* figure 2: dumbbell, AUROC as recorded vs values shuffled */
+  function drawShuffle() {
+    var host = $('plot-shuffle');
+    if (!host) return;
+    var tip = tipFor('chart-shuffle');
+    var old = host.querySelector('svg'); if (old) host.removeChild(old);
+    var W = Math.max(280, Math.round(host.clientWidth));
+    var rowH = 100, top = 4, L = 18, R = 34, axisH = 54;
+    var H = top + MODELS.length * rowH + axisH;
+    var x0 = 0.5, x1 = 0.9;
+    function X(v) { return L + (v - x0) / (x1 - x0) * (W - L - R); }
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img',
+      'aria-label': 'AUROC as recorded and with values shuffled. Small model 0.8815 to 0.6605. Llemr-v1 0.7951 to 0.6730.' }, host);
+    var bottom = top + MODELS.length * rowH;
+    [0.5, 0.6, 0.7, 0.8, 0.9].forEach(function (v, i) {
+      el('line', { x1: X(v), x2: X(v), y1: top, y2: bottom, 'class': i === 0 ? 'g-axis' : 'g-line' }, svg);
+      text(svg, X(v), bottom + 18, v.toFixed(1), 't-tick', 'middle');
+    });
+    text(svg, L, bottom + 40, 'AUROC (0.5 = chance, 1 = perfect ranking)', 't-sub', 'start');
+
+    MODELS.forEach(function (r, i) {
+      var y0 = top + i * rowH, dy = y0 + 62;
+      var g = el('g', { 'class': r.seg }, svg);
+      el('rect', { x: L + 8, y: y0 + 8, width: 10, height: 10, rx: 2, 'class': 'f-c' }, g);
+      var lab = text(g, L + 24, y0 + 18, r.name, 't-label', 'start');
+      var sub = el('tspan', { 'class': 't-sub', dx: 8 }, lab); sub.textContent = r.sub; sub.style.fontWeight = '400';
+      el('line', { x1: X(r.shuf), x2: X(r.rec), y1: dy, y2: dy, 'class': 'conn s-c' }, g);
+      el('circle', { cx: X(r.shuf), cy: dy, r: 9, 'class': 'ring' }, g);
+      el('circle', { cx: X(r.shuf), cy: dy, r: 6.5, 'class': 'dot-hollow s-c' }, g);
+      el('circle', { cx: X(r.rec), cy: dy, r: 9, 'class': 'ring' }, g);
+      el('circle', { cx: X(r.rec), cy: dy, r: 7, 'class': 'f-c' }, g);
+      text(g, X(r.shuf), dy - 15, r.shuf.toFixed(3), 't-val', 'middle');
+      text(g, X(r.rec), dy - 15, r.rec.toFixed(3), 't-val', 'middle');
+      var mid = Math.min(W - R - 60, Math.max(L + 70, (X(r.shuf) + X(r.rec)) / 2));
+      text(g, mid, dy + 28, (r.rec - r.shuf >= 0 ? '+' : MINUS) + Math.abs(r.rec - r.shuf).toFixed(3) + ' from the values', 't-gap', 'middle');
+
+      [{ v: r.rec, what: 'as recorded' }, { v: r.shuf, what: 'values shuffled' }].forEach(function (d) {
+        var hit = el('circle', { cx: X(d.v), cy: dy, r: 18, 'class': 'hit', tabindex: 0, role: 'img',
+          'aria-label': r.name + ', ' + d.what + ', AUROC ' + d.v.toFixed(4) }, g);
+        function show() { tip.show(r.name + ' · ' + d.what, [{ value: 'AUROC ' + d.v.toFixed(4), label: '', seg: r.seg }], X(d.v), dy - 22); }
+        hit.addEventListener('pointerenter', show);
+        hit.addEventListener('pointerdown', show);
+        hit.addEventListener('focus', show);
+        hit.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') tip.hide(); });
+        hit.addEventListener('blur', function () { tip.hide(); });
+      });
+    });
+  }
+
+  /* lactate dose-response lines with crosshair (cover version is compact) */
+  function drawLactate(cfg) {
+    var host = $(cfg.host);
+    if (!host) return;
+    var tip = tipFor(cfg.box);
+    var old = host.querySelector('svg'); if (old) host.removeChild(old);
+    var W = Math.max(260, Math.round(host.clientWidth)), H = cfg.H(W);
+    var m = cfg.m, xs = LACT.x, active = -1;
+    function X(v) { return m.l + (v - 0.5) / 8 * (W - m.l - m.r); }
+    var y0 = cfg.y[0], y1 = cfg.y[1];
+    function Y(v) { return m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b); }
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img',
+      'aria-label': 'Change in mean predicted risk as the latest lactate is set to 1, 2, 4, 6 and 8 mmol/L. Small model rises to plus 1.08 percentage points. Llemr-v1 falls to minus 0.12.' }, host);
+
+    cfg.ticks.forEach(function (t) {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), 'class': t === 0 ? 'g-axis' : 'g-line' }, svg);
+      text(svg, m.l - 10, Y(t) + 4, t === 0 ? '0' : signed(t, 1), 't-tick', 'end');
+    });
+    el('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, 'class': 'g-axis' }, svg);
+    xs.forEach(function (v) {
+      el('line', { x1: X(v), x2: X(v), y1: H - m.b, y2: H - m.b + 5, 'class': 'g-axis' }, svg);
+      text(svg, X(v), H - m.b + 21, String(v), 't-tick', 'middle');
+    });
+    text(svg, m.l, H - 8, 'Latest lactate set to (mmol/L)', 't-sub', 'start');
+
+    var series = [
+      { key: 'llemr', seg: 'seg-llemr', name: 'Llemr-v1', vals: LACT.llemr },
+      { key: 'small', seg: 'seg-small', name: 'Small model', vals: LACT.small }
+    ];
+    var cross = el('line', { x1: 0, x2: 0, y1: m.t, y2: H - m.b, 'class': 'cross' }, svg);
+    cross.style.display = 'none';
+    var dots = {};
+    series.forEach(function (s) {
+      var g = el('g', { 'class': s.seg }, svg);
+      var d = xs.map(function (v, i) { return (i ? 'L' : 'M') + X(v).toFixed(1) + ' ' + Y(s.vals[i]).toFixed(1); }).join(' ');
+      el('path', { d: d, 'class': 'lineS s-c' }, g);
+      dots[s.key] = xs.map(function (v, i) {
+        var ring = el('circle', { cx: X(v), cy: Y(s.vals[i]), r: 6.5, 'class': 'ring' }, g);
+        var dot = el('circle', { cx: X(v), cy: Y(s.vals[i]), r: 4.5, 'class': 'f-c' }, g);
+        return { ring: ring, dot: dot };
+      });
+      var last = s.vals[s.vals.length - 1];
+      text(g, X(8) + 12, Y(last) + 4, signed(last, 2) + ' pp', 't-val', 'start');
+    });
+
+    var hit = el('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, 'class': 'plot-hit', tabindex: 0,
+      'aria-label': 'Lactate chart. Use the left and right arrow keys to read each value.' }, svg);
+
+    function setActive(i, py) {
+      active = i;
+      series.forEach(function (s) {
+        dots[s.key].forEach(function (p, j) {
+          p.ring.setAttribute('r', j === i ? 8.5 : 6.5);
+          p.dot.setAttribute('r', j === i ? 6 : 4.5);
+        });
+      });
+      if (i < 0) { cross.style.display = 'none'; tip.hide(); return; }
+      var xv = X(xs[i]);
+      cross.setAttribute('x1', xv); cross.setAttribute('x2', xv); cross.style.display = '';
+      var ymid = (Y(LACT.small[i]) + Y(LACT.llemr[i])) / 2;
+      tip.show('Latest lactate set to ' + xs[i] + ' mmol/L', [
+        { value: signed(LACT.small[i], 2) + ' pp', label: 'Small model', seg: 'seg-small' },
+        { value: signed(LACT.llemr[i], 2) + ' pp', label: 'Llemr-v1', seg: 'seg-llemr' }
+      ], xv, typeof py === 'number' ? py : ymid);
+    }
+    function nearest(clientX) {
+      var r = hit.getBoundingClientRect();
+      var px = (clientX - r.left) * (W - m.l - m.r) / r.width + m.l;
+      var best = 0, bd = 1e9;
+      xs.forEach(function (v, i) { var dd = Math.abs(X(v) - px); if (dd < bd) { bd = dd; best = i; } });
+      return best;
+    }
+    function localY(e) { var r = svg.getBoundingClientRect(); return e.clientY - r.top; }
+    hit.addEventListener('pointermove', function (e) { setActive(nearest(e.clientX), localY(e)); });
+    hit.addEventListener('pointerdown', function (e) { setActive(nearest(e.clientX), localY(e)); });
+    hit.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') setActive(-1); });
+    hit.addEventListener('blur', function () { setActive(-1); });
+    hit.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); setActive(Math.min(xs.length - 1, active < 0 ? 0 : active + 1)); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); setActive(Math.max(0, active < 0 ? xs.length - 1 : active - 1)); }
+      else if (e.key === 'Escape') { setActive(-1); }
+    });
+  }
+
+  var CHARTS = [
+    { host: 'plot-auroc', draw: drawAuroc },
+    { host: 'plot-mini', draw: function () {
+      drawLactate({ host: 'plot-mini', box: 'chart-mini', H: function () { return 212; }, m: { t: 10, r: 70, b: 48, l: 44 }, y: [-0.4, 1.4], ticks: [0, 0.5, 1] });
+    } },
+    { host: 'plot-shuffle', draw: drawShuffle },
+    { host: 'plot-lactate', draw: function () {
+      drawLactate({ host: 'plot-lactate', box: 'chart-lactate', H: function (w) { return w < 520 ? 280 : 320; }, m: { t: 12, r: 78, b: 58, l: 52 }, y: [-0.4, 1.4], ticks: [-0.4, 0, 0.4, 0.8, 1.2] });
+    } }
+  ];
+
+  /* draw now and whenever a chart's width changes */
+  var lastW = {};
+  function redraw() {
+    CHARTS.forEach(function (c) {
+      var h = $(c.host);
+      if (!h) return;
+      var w = Math.round(h.clientWidth);
+      if (w === lastW[c.host]) return;
+      lastW[c.host] = w;
+      try { c.draw(); } catch (err) { if (window.console) console.error(err); }
+    });
+  }
+  redraw();
+  if ('ResizeObserver' in window) {
+    var raf = 0;
+    var ro = new ResizeObserver(function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(redraw); });
+    CHARTS.forEach(function (c) { var n = $(c.host); if (n) ro.observe(n); });
+  } else {
+    window.addEventListener('resize', redraw);
+  }
+  document.addEventListener('pointerdown', function (e) {
+    Object.keys(tips).forEach(function (id) {
+      if (!(e.target.closest && e.target.closest('#' + id))) tips[id].hide();
+    });
+  });
+
+  /* top bar: mark the section in view, and keep it visible in the scrollable nav */
+  var navEl = document.querySelector('.nav');
+  var navLinks = navEl ? [].slice.call(navEl.querySelectorAll('a[href^="#"]')) : [];
+  var navTargets = navLinks.map(function (a) { return $(a.getAttribute('href').slice(1)); });
+  var curNav = -2, ticking = false;
+  function spy() {
+    var line = HEADER_H + 56, cur = -1;
+    navTargets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top <= line) cur = i; });
+    var doc = document.documentElement;
+    if (window.innerHeight + (window.pageYOffset || doc.scrollTop) >= doc.scrollHeight - 4) cur = navLinks.length - 1;
+    if (cur === curNav) return;
+    curNav = cur;
+    navLinks.forEach(function (a, i) { if (i === cur) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+    if (cur >= 0 && navEl.scrollWidth > navEl.clientWidth + 2) {
+      var a = navLinks[cur];
+      navEl.scrollTo({ left: Math.max(0, a.offsetLeft - (navEl.clientWidth - a.offsetWidth) / 2), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { ticking = false; spy(); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  spy();
+})();
+</script>
+</body>
+</html>
