@@ -1,22 +1,25 @@
-# Mini-project page (MD6329 Deep Learning for Healthcare AI)
+# Can a language model read the numbers in an ICU chart?
 
-A single self-contained file: `index.html`. No build step, no dependencies. The Inter font loads from Google Fonts and falls back to system fonts if it is blocked.
+Project page for the MD6329 Deep Learning for Healthcare AI mini-project.
 
-## Publish it with GitHub Pages (about two minutes)
+## About the page
 
-1. On GitHub, create a new **public** repository, for example `MD6329_miniproj_page`.
-2. Click **Add file > Upload files**, drop in `index.html` (at the repository root) and commit.
-3. Open **Settings > Pages**. Under *Build and deployment*, choose **Deploy from a branch**, select branch `main` and folder `/ (root)`, then **Save**.
-4. After a minute or two the page is live at `https://<your-github-name>.github.io/<repository-name>/`. For the repository above and the account that hosts LecTrace, that is `https://goaustin.github.io/MD6329_miniproj_page/`. Anyone can open it without signing in.
+A blog-style write-up of one question: should we fine-tune a large language model built for health records, or train a small model from scratch? We compared Llemr-v1, a 7-billion-parameter EHR language model, with a 0.29-million-parameter event encoder on a standard benchmark, predicting in-hospital death from the first 48 hours in the ICU (PhysioNet 2012).
 
-Do not put this file into the LecTrace repository: it would replace that site's own `index.html`.
+- **Result.** The small model scores a higher test AUROC (0.882 against 0.795) and trains about 150 times faster.
+- **Diagnostics.** Three probes ask how each model uses the measured values, and point to how numbers enter a language model as the likely cause.
+- **Contents.** Question, Approach, Results (two interactive charts with table views), Takeaways, LecTrace presentation and Report.
+- **Links.** The top of the page links to the [LecTrace presentation](https://goaustin.github.io/LecTrace_MD6329_miniproj/#/?trace=01_icu_mortality), a step-by-step walkthrough of the model, and to the full report (PDF).
 
-## Edit before you publish
+## How to access
 
-- **Byline.** Search `index.html` for `Byline` (an HTML comment under the title) and add your name and student ID.
-- **Links.** The LecTrace and Google Drive links appear as plain `href` values. To change one, search for `goaustin.github.io` or `drive.google.com` and replace every occurrence.
-- **Check the Google Drive link.** Open it in a private browser window. It must show the PDF without asking you to sign in (Share > General access > Anyone with the link).
+**Online:** <https://goaustin.github.io/MD6329_miniproj_page/>. No sign-in is needed.
 
-## What the page contains
+**Locally:** the page is a single self-contained file with no build step. Open `index.html` in a browser, or serve the folder:
 
-A blog-style article. Title and two link buttons (LecTrace presentation, report), a cover figure, a Question callout and a TL;DR, then the sections Question, Approach, Results (two interactive charts with table views), Takeaways, LecTrace and Report. The sticky top bar jumps between the sections and highlights the one in view.
+```sh
+python3 -m http.server 8000
+# then visit http://localhost:8000
+```
+
+The Inter font loads from Google Fonts and falls back to system fonts if it is blocked.
